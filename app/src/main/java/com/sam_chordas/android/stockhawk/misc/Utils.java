@@ -47,20 +47,31 @@ public class Utils {
                     resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
 
                     if (resultsArray != null && resultsArray.length() != 0){
+                        ContentProviderOperation c;
                         for (int i = 0; i < resultsArray.length(); i++){
                             jsonObject = resultsArray.getJSONObject(i);
-                            batchOperations.add(buildBatchOperation(jsonObject));
+                            try {
+                                c = buildBatchOperation(jsonObject);
+                                if (c != null)
+                                    batchOperations.add(c);
+                            }
+                            catch (NetworkErrorException n){
+                                Log.v(LOG_TAG, "Got a network error in bulk update. Ignored");
+                            }
                         }
                     }
                 }
             }
         } catch (JSONException e){
             Log.e(LOG_TAG, "String to JSON failed: " + e);
+            throw new NetworkErrorException();
         }
         return batchOperations;
     }
 
     public static String truncateBidPrice(String bidPrice){
+        if (bidPrice.equals("null"))
+            bidPrice = "0";
         bidPrice = String.format("%.2f", Float.parseFloat(bidPrice));
         return bidPrice;
     }
@@ -82,13 +93,13 @@ public class Utils {
         return change;
     }
 
-    public static ContentProviderOperation buildBatchOperation(JSONObject jsonObject){
+    public static ContentProviderOperation buildBatchOperation(JSONObject jsonObject) throws NetworkErrorException {
         ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 QuoteProvider.Quotes.CONTENT_URI);
         try {
-            String change = jsonObject.getString("Change");
-            if (change.equals("null"))
+            if (jsonObject.getString("Name").equals("null"))
                 return null;
+            String change = jsonObject.getString("Change");
             builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
             builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
             builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
@@ -101,8 +112,9 @@ public class Utils {
                 builder.withValue(QuoteColumns.ISUP, 1);
             }
 
-        } catch (JSONException e){
+        } catch (Exception e){
             e.printStackTrace();
+            throw new NetworkErrorException();
         }
         return builder.build();
     }
