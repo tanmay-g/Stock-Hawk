@@ -1,9 +1,11 @@
 package com.sam_chordas.android.stockhawk.ui;
 
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
@@ -30,9 +32,9 @@ import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
-import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
-import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
-import com.sam_chordas.android.stockhawk.rest.Utils;
+import com.sam_chordas.android.stockhawk.misc.QuoteCursorAdapter;
+import com.sam_chordas.android.stockhawk.misc.RecyclerViewItemClickListener;
+import com.sam_chordas.android.stockhawk.misc.Utils;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
@@ -55,6 +57,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private Cursor mCursor;
     boolean isConnected;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private BroadcastReceiver mRefreshCompleteBroadcastReciever;
+    public final static String REFRESH_COMPLETE = "com.sam_chordas.android.stockhawk.refresh_complete";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,15 +100,16 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Intent updateIntent = new Intent(MyStocksActivity.this, StockIntentService.class);
-                updateIntent.putExtra("tag", "periodic");
-                if (isConnected){
-                    startService(updateIntent);
-                } else{
-                    networkToast();
-                }
+                launchRefreshIntent();
             }
         });
+
+        mRefreshCompleteBroadcastReciever = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        };
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToRecyclerView(recyclerView);
@@ -176,6 +181,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public void onResume() {
         super.onResume();
         getLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+        registerReceiver(mRefreshCompleteBroadcastReciever, new IntentFilter(REFRESH_COMPLETE));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mRefreshCompleteBroadcastReciever);
     }
 
     public void networkToast(){
@@ -192,10 +204,18 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my_stocks, menu);
+        MenuItem unitToggle = menu.findItem(R.id.action_change_units);
+        setToggleIcon(unitToggle);
         restoreActionBar();
         return true;
     }
 
+    private void setToggleIcon(MenuItem toggleIcon){
+        if (Utils.showPercent)
+            toggleIcon.setIcon(R.drawable.ic_percentage);
+        else
+            toggleIcon.setIcon(R.drawable.ic_attach_money_white_24dp);
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -212,10 +232,25 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         if (id == R.id.action_change_units){
             // this is for changing stock changes from percent value to dollar value
             Utils.showPercent = !Utils.showPercent;
+            setToggleIcon(item);
             this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
         }
 
+        if (id == R.id.menu_refresh){
+            launchRefreshIntent();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void launchRefreshIntent(){
+        Intent updateIntent = new Intent(MyStocksActivity.this, StockIntentService.class);
+        updateIntent.putExtra("tag", "periodic");
+        if (isConnected){
+            startService(updateIntent);
+        } else{
+            networkToast();
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.sam_chordas.android.stockhawk.rest;
+package com.sam_chordas.android.stockhawk.misc;
 
 import android.accounts.NetworkErrorException;
 import android.content.ContentProviderOperation;
