@@ -50,6 +50,7 @@ public class GraphDetailActivityFragment extends Fragment {
             }
 
             Log.i(LOG_TAG, Arrays.toString(mYearData));
+
             //TODO update UI now
         }
 
