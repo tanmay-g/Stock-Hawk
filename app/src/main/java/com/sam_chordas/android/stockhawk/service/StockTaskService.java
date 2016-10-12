@@ -47,6 +47,7 @@ public class StockTaskService extends GcmTaskService{
     public StockTaskService(Context context){
         mContext = context;
     }
+
     String fetchData(String url) throws IOException{
         Request request = new Request.Builder()
                 .url(url)
@@ -134,12 +135,15 @@ public class StockTaskService extends GcmTaskService{
                     }
                     ArrayList<ContentProviderOperation> jsonResult = Utils.quoteJsonToContentVals(getResponse);
                     Log.e(LOG_TAG, "Got the jsonResult: " + jsonResult);
-                    if (jsonResult != null) {
+                    if (jsonResult == null) {
+                        result = INVALID_STOCK_NAME;
+
+                    }
+                    else if (jsonResult.isEmpty())
+                        result = NETWORK_FAILURE;
+                    else {
                         mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                                 jsonResult);
-                    }
-                    else {
-                        result = INVALID_STOCK_NAME;
                     }
                 }catch (RemoteException | OperationApplicationException e){
                     Log.e(LOG_TAG, "Error applying batch insert", e);

@@ -118,4 +118,39 @@ public class Utils {
         }
         return builder.build();
     }
+
+    public static float[] historicalDataToFloatArr (String response) throws NetworkErrorException{
+
+        JSONObject jsonObject = null;
+        JSONArray resultsArray = null;
+        float[] results = null;
+        try{
+            jsonObject = new JSONObject(response);
+            if (jsonObject != null && jsonObject.length() != 0){
+                if (jsonObject.has("error")){
+                    throw new NetworkErrorException();
+                    //In case of random error response, it will show a toast and return
+                }
+                jsonObject = jsonObject.getJSONObject("query");
+                int count = Integer.parseInt(jsonObject.getString("count"));
+                if (count < 1)
+                    return null;
+                resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
+
+                if (resultsArray != null && resultsArray.length() != 0){
+                    results = new float[resultsArray.length()];
+                    for (int i = 0; i < resultsArray.length(); i++){
+                        jsonObject = resultsArray.getJSONObject(i);
+                        results[i] = (float) jsonObject.getDouble("Open");
+
+                    }
+                }
+            }
+        }
+         catch (JSONException e){
+            Log.e(LOG_TAG, "String to JSON failed: " + e);
+            throw new NetworkErrorException();
+        }
+        return results;
+    }
 }

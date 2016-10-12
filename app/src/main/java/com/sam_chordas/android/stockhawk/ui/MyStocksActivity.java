@@ -22,9 +22,11 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.Theme;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
@@ -91,8 +93,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
                 new RecyclerViewItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View v, int position) {
-
-                        //TODO: do something on item click
+                        String symbol = (String) ((TextView) v.findViewById(R.id.stock_symbol)).getText();
+                        Intent detailIntent = new Intent(mContext, GraphDetailActivity.class);
+                        detailIntent.setData(QuoteProvider.Quotes.withSymbol(symbol));
+                        mContext.startActivity(detailIntent);
                     }
                 }));
         recyclerView.setAdapter(mCursorAdapter);
@@ -117,7 +121,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         fab.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 if (isConnected){
-                    new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
+                    new MaterialDialog.Builder(mContext)
+                            .theme(Theme.LIGHT)
+                            .title(R.string.symbol_search)
                             .content(R.string.content_test)
                             .inputType(InputType.TYPE_CLASS_TEXT)
                             .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
