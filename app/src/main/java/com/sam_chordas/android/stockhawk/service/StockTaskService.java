@@ -4,6 +4,7 @@ import android.accounts.NetworkErrorException;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -125,6 +126,11 @@ public class StockTaskService extends GcmTaskService{
                 getResponse = fetchData(urlString);
                 Log.i(LOG_TAG, "Got the response: " + getResponse);
                 result = GcmNetworkManager.RESULT_SUCCESS;
+                if (isUpdate){
+                    Intent dataUpdatedIntent = new Intent(Utils.ACTION_DATA_UPDATED)
+                            .setPackage("com.sam_chordas.android.stockhawk.widget");
+                    mContext.sendBroadcast(dataUpdatedIntent);
+                }
                 try {
                     ContentValues contentValues = new ContentValues();
                     // update ISCURRENT to 0 (false) so new data is current
