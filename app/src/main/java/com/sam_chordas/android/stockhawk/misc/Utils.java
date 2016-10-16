@@ -136,12 +136,12 @@ public class Utils {
                 if (count < 1)
                     return null;
                 resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
-
-                if (resultsArray != null && resultsArray.length() != 0){
-                    results = new float[resultsArray.length()];
-                    for (int i = 0; i < resultsArray.length(); i++){
+                int length = resultsArray.length();
+                if (resultsArray != null && length != 0){
+                    results = new float[length];
+                    for (int i = 0; i < length; i++){
                         jsonObject = resultsArray.getJSONObject(i);
-                        results[i] = (float) jsonObject.getDouble("Open");
+                        results[length - i - 1] = (float) jsonObject.getDouble("Open");
 
                     }
                 }

@@ -11,11 +11,13 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
 import android.view.Gravity;
@@ -30,7 +32,6 @@ import com.afollestad.materialdialogs.Theme;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
-import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
@@ -61,6 +62,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private BroadcastReceiver mRefreshCompleteBroadcastReciever;
     public final static String REFRESH_COMPLETE = "com.sam_chordas.android.stockhawk.refresh_complete";
+    private RecyclerView mRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,12 +87,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 networkToast();
             }
         }
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
         mCursorAdapter = new QuoteCursorAdapter(this, null);
-        recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
+        mRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
                 new RecyclerViewItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View v, int position) {
                         String symbol = (String) ((TextView) v.findViewById(R.id.stock_symbol)).getText();
@@ -99,7 +101,26 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                         mContext.startActivity(detailIntent);
                     }
                 }));
-        recyclerView.setAdapter(mCursorAdapter);
+        mRecyclerView.setAdapter(mCursorAdapter);
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE)
+                    fab.show();
+                else
+                    fab.hide();
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+//            @Override
+//            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+//                if (abs(dy) > 10 && fab.isShown())
+//                    fab.hide();
+//                super.onScrolled(recyclerView, dx, dy);
+//            }
+        });
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -116,8 +137,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             }
         };
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.attachToRecyclerView(recyclerView);
+
+
+//        fab.attachToRecyclerView(mRecyclerView);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 if (isConnected){
@@ -159,7 +181,14 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
         mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
+        mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+
+        Toolbar toolbarView = (Toolbar) findViewById(R.id.toolbar);
+        if ( null != toolbarView ) {
+            setSupportActionBar(toolbarView);
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
 
         mTitle = getTitle();
         if (isConnected){
@@ -195,6 +224,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mRefreshCompleteBroadcastReciever);
+        mRecyclerView.clearOnScrollListeners();
     }
 
     public void networkToast(){
