@@ -63,17 +63,21 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private BroadcastReceiver mRefreshCompleteBroadcastReciever;
     public final static String REFRESH_COMPLETE = "com.sam_chordas.android.stockhawk.refresh_complete";
     private RecyclerView mRecyclerView;
+    private TextView mEmptyView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mContext = this;
+    private void updateConnectivityState(){
         ConnectivityManager cm =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mContext = this;
+        updateConnectivityState();
         setContentView(R.layout.activity_my_stocks);
         // The intent service is for executing immediate pulls from the Yahoo API
         // GCMTaskService can only schedule tasks, they cannot execute immediately
@@ -137,7 +141,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             }
         };
 
-
+        mEmptyView = (TextView) findViewById(R.id.empty);
 
 //        fab.attachToRecyclerView(mRecyclerView);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -271,6 +275,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             Utils.showPercent = !Utils.showPercent;
             setToggleIcon(item);
             this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
+            Intent dataUpdatedIntent = new Intent(Utils.ACTION_DATA_UPDATED)
+                    .setPackage(mContext.getPackageName());
+            mContext.sendBroadcast(dataUpdatedIntent);
         }
 
         if (id == R.id.menu_refresh){
@@ -281,11 +288,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
 
     private void launchRefreshIntent(){
-        Intent updateIntent = new Intent(MyStocksActivity.this, StockIntentService.class);
-        updateIntent.putExtra("tag", "periodic");
+        updateConnectivityState();
         if (isConnected){
+            Intent updateIntent = new Intent(MyStocksActivity.this, StockIntentService.class);
+            updateIntent.putExtra("tag", "periodic");
             startService(updateIntent);
         } else{
+            mSwipeRefreshLayout.setRefreshing(false);
             networkToast();
         }
     }
@@ -304,6 +313,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data){
         mCursorAdapter.swapCursor(data);
+        updateEmptyView();
         mCursor = data;
     }
 
@@ -312,4 +322,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mCursorAdapter.swapCursor(null);
     }
 
+    void updateEmptyView(){
+        if (mCursorAdapter.getItemCount() == 0){
+            int message = R.string.empty_message_default;
+            if (!isConnected)
+                message = R.string.empty_message_nonet;
+            mEmptyView.setText(message);
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
+        else
+            mEmptyView.setVisibility(View.GONE);
+    }
 }

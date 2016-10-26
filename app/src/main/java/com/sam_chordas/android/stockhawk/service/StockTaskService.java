@@ -126,11 +126,12 @@ public class StockTaskService extends GcmTaskService{
                 getResponse = fetchData(urlString);
                 Log.i(LOG_TAG, "Got the response: " + getResponse);
                 result = GcmNetworkManager.RESULT_SUCCESS;
-                if (isUpdate){
+//                if (isUpdate){
                     Intent dataUpdatedIntent = new Intent(Utils.ACTION_DATA_UPDATED)
-                            .setPackage("com.sam_chordas.android.stockhawk.widget");
+                            .setPackage(mContext.getPackageName());
+                    Log.w(LOG_TAG, "onRunTask: SENDING BROADCAST");
                     mContext.sendBroadcast(dataUpdatedIntent);
-                }
+//                }
                 try {
                     ContentValues contentValues = new ContentValues();
                     // update ISCURRENT to 0 (false) so new data is current

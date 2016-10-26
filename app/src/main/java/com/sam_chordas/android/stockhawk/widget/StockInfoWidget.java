@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.sam_chordas.android.stockhawk.R;
@@ -22,8 +23,10 @@ import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
  */
 public class StockInfoWidget extends AppWidgetProvider {
 
+    private static final String LOG_TAG = StockInfoWidget.class.getSimpleName();
+
     void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+                         int appWidgetId) {
 
         CharSequence widgetText = context.getString(R.string.appwidget_title_text);
         // Construct the RemoteViews object
@@ -35,6 +38,7 @@ public class StockInfoWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.appwidget_title, pendingIntent);
 
         views.setTextViewText(R.id.appwidget_title, widgetText);
+        views.setEmptyView(R.id.appwidget_stock_list, R.id.empty);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             setRemoteAdapter(context, views);
@@ -65,6 +69,7 @@ public class StockInfoWidget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         if (Utils.ACTION_DATA_UPDATED.equals(intent.getAction())){
+            Log.w(LOG_TAG, "onReceive: Got UPDATE SIGNAL");
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
                     new ComponentName(context, getClass()));

@@ -6,6 +6,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -33,6 +34,7 @@ import static com.sam_chordas.android.stockhawk.R.id.linechart;
 public class GraphDetailActivityFragment extends Fragment {
 
     private static final String LOG_TAG = GraphDetailActivityFragment.class.getName();
+    private final Handler mHandler;
 
     private LineChartView mChartView;
     private TabLayout mTabLayout;
@@ -40,6 +42,7 @@ public class GraphDetailActivityFragment extends Fragment {
     private static final String YEAR_DATA_KEY = "YEAR_DATA_KEY";
 
     public GraphDetailActivityFragment() {
+        mHandler = new Handler();
     }
 
     private String mSymbol;
@@ -104,8 +107,13 @@ public class GraphDetailActivityFragment extends Fragment {
         if (mYearData == null){
             Log.i(LOG_TAG, "onTabSelected: Reached here with null data");
             Toast.makeText(getActivity(), "No data found for this stock", Toast.LENGTH_LONG).show();
-            getActivity().onBackPressed();
-            //set empty view visible?
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    getActivity().onBackPressed();
+                }
+            });
+            //TODO set empty view visible?
             return;
         }
         float[] dataToUse;

@@ -14,4 +14,7 @@
     <string name="title_activity_graph_detail">GraphDetailActivity</string>
     <string name="appwidget_title_text">Stock Hawk</string>
     <string name="add_widget">Add widget</string>
+
+    <string name="empty_message_default">Unable to fetch stock details</string>
+    <string name="empty_message_nonet">Unable to establish network connection</string>
 </resources>

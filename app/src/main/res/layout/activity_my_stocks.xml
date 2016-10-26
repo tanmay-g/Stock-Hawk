@@ -29,7 +29,7 @@
         <!--android:layout_height="match_parent"-->
         <!--&gt;-->
 
-        <android.support.v4.widget.SwipeRefreshLayout
+    <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -58,7 +58,18 @@
             app:layout_behavior=""
             app:elevation="@dimen/fab_elevation_lollipop"
             app:fabSize="normal" />
-            <!--fab:fab_colorNormal="@color/primary"-->
+
+    <TextView
+        android:text="Unable to fetch stock details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/empty"
+        fab:text="Unable to fetch stock details"
+        android:visibility="gone"
+        app:layout_anchor="@+id/recycler_view"
+        app:layout_anchorGravity="center"
+        android:gravity="center" />
+    <!--fab:fab_colorNormal="@color/primary"-->
             <!--fab:fab_colorPressed="@color/primary_dark"-->
             <!--fab:fab_colorRipple="@color/ripple"-->
             <!--fab:fab_shadow="true"-->

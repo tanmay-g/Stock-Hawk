@@ -22,11 +22,23 @@
         android:elevation="8dp"
         />
 
-    <ListView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/appwidget_stock_list">
+        android:layout_height="match_parent">
 
-    </ListView>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/appwidget_stock_list">
+
+        </ListView>
+
+        <TextView
+            android:text="@string/empty_message_default"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/empty"
+            android:gravity="center" />
+    </FrameLayout>
 
 </LinearLayout>

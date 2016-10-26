@@ -47,11 +47,6 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
-        <TextView
-            android:text="TextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView" />
 
         <com.db.chart.view.LineChartView
                     android:id="@+id/linechart"
@@ -60,6 +55,13 @@
                     android:padding="16dp"
                     tools:chart_axisColor="@color/white"
             />
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/textView"
+            android:visibility="gone" />
     </FrameLayout>
 
 
