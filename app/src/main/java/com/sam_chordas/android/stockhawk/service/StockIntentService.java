@@ -8,10 +8,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.gcm.TaskParams;
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
 
 /**
- * Created by sam_chordas on 10/1/15.
+ * Created by sam_chordas on 10/1/15
  */
 public class StockIntentService extends IntentService {
 
@@ -44,9 +45,9 @@ public class StockIntentService extends IntentService {
 
         String toastText = null;
         if (result == StockTaskService.INVALID_STOCK_NAME)
-            toastText = "Invalid stock name";
+            toastText = getString(R.string.stock_name_invalid_toast_message);
         else if (result == StockTaskService.NETWORK_FAILURE)
-            toastText = "Network failure. Try again soon";
+            toastText = getString(R.string.stock_add_net_fail_toast_message);
 
         if (toastText != null) {
             final String finalToastText = toastText;

@@ -12,4 +12,6 @@ Refer to App Widget Documentation for margin information
 http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     -->
     <dimen name="widget_margin">8dp</dimen>
+    <dimen name="stock_list_horizontal_tablet">128dp</dimen>
+    <dimen name="bid_price_horiozontal_padding">10sp</dimen>
 </resources>

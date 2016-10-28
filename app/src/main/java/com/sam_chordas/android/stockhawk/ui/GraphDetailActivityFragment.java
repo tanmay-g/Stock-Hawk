@@ -26,8 +26,6 @@ import com.sam_chordas.android.stockhawk.service.HistoricalDataLoader;
 
 import java.util.Arrays;
 
-import static com.sam_chordas.android.stockhawk.R.id.linechart;
-
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -63,13 +61,21 @@ public class GraphDetailActivityFragment extends Fragment {
         public void onLoadFinished(Loader<float[]> loader, float[] data) {
             Log.i(LOG_TAG, "onLoadFinished: will now set mYearData");
             mYearData = data;
-            if (mSelectedTab != -1)
-                mTabLayout.getTabAt(mSelectedTab).select();
-            else
-                mTabLayout.getTabAt(2).select();
-
+            if (data != null) {
+                if (mSelectedTab != -1)
+                    mTabLayout.getTabAt(mSelectedTab).select();
+                else
+                    mTabLayout.getTabAt(2).select();
+            }
+            else{
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().onBackPressed();
+                    }
+                });
+            }
         }
-
 
         @Override
         public void onLoaderReset(Loader loader) {
@@ -104,37 +110,45 @@ public class GraphDetailActivityFragment extends Fragment {
     private void updateTab(TabLayout.Tab tab){
         mSelectedTab = tab.getPosition();
         Log.i(LOG_TAG, "onTabSelected: " + mSelectedTab);
-        if (mYearData == null){
-            Log.i(LOG_TAG, "onTabSelected: Reached here with null data");
-            Toast.makeText(getActivity(), "No data found for this stock", Toast.LENGTH_LONG).show();
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    getActivity().onBackPressed();
-                }
-            });
-            //TODO set empty view visible?
-            return;
-        }
+//        if (mYearData == null){
+//            Log.i(LOG_TAG, "onTabSelected: Reached here with null data");
+//            Toast.makeText(getActivity(), "No data found for this stock", Toast.LENGTH_LONG).show();
+//            mHandler.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    getActivity().onBackPressed();
+//                }
+//            });
+//            return;
+//        }
         float[] dataToUse;
         String[] textLabels;
         switch (tab.getPosition()){
             case 0:{
                 //1 month
                 dataToUse = Arrays.copyOfRange(mYearData, mYearData.length - Math.round(mYearData.length/12), mYearData.length);
-                textLabels = new String[]{"1 month ago", "15 days ago", "Today"};
+                textLabels = new String[]{
+                        getString(R.string.one_month_graph_max_label),
+                        getString(R.string.one_month_graph_mid_label),
+                        getString(R.string.one_month_graph_min_label)};
                 break;
             }
             case 1:{
                 //6 months
                 dataToUse = Arrays.copyOfRange(mYearData, mYearData.length - Math.round(mYearData.length/4), mYearData.length);
-                textLabels = new String[]{"3 months ago", "1½ months ago", "Today"};
+                textLabels = new String[]{
+                        getString(R.string.three_month_graph_max_label),
+                        getString(R.string.three_month_graph_mid_label),
+                        getString(R.string.three_month_graph_min_label)};
                 break;
             }
             case 2:{
                 //1 year
                 dataToUse = mYearData;
-                textLabels = new String[]{"1 year ago", "½ year ago", "Today"};
+                textLabels = new String[]{
+                        getString(R.string.one_year_graph_max_label),
+                        getString(R.string.one_year_graph_mid_label),
+                        getString(R.string.one_year_graph_min_label)};
                 break;
             }
             default:{
@@ -190,6 +204,7 @@ public class GraphDetailActivityFragment extends Fragment {
         int step = (itop - ibottom)/ numLabels;
         Log.i(LOG_TAG, "onTabSelected: Max: " + max + " Min: " + min);
         Log.i(LOG_TAG, "onTabSelected: Top: " + itop + " Bottom: " + ibottom + " step: " + step);
+        mChartView.setContentDescription(getString(R.string.graph_content_desc) + mSymbol);
         mChartView.setStep(step);
         mChartView.setAxisBorderValues(ibottom, itop);
 //            mChartView.setStep(diff / 2);
@@ -212,15 +227,13 @@ public class GraphDetailActivityFragment extends Fragment {
                     new String[]{"1"},
                     null);
             if (!(currentDataCursor != null && currentDataCursor.moveToFirst()))
-                    throw new Exception("No data for this stock");
+                    throw new Exception(getString(R.string.graph_data_not_found_toast_message));
 
             mSymbol = currentDataCursor.getString(currentDataCursor.getColumnIndex("symbol"));
 
-            //TODO possibly get other stock details to show on screen
-
             currentDataCursor.close();
             View rootView = inflater.inflate(R.layout.fragment_graph_detail, container, false);
-            mChartView = (LineChartView) rootView.findViewById(linechart);
+            mChartView = (LineChartView) rootView.findViewById(R.id.linechart);
             Toolbar toolbarView = (Toolbar) rootView.findViewById(R.id.toolbar);
             AppCompatActivity activity = (AppCompatActivity) getActivity();
             if ( null != toolbarView ) {

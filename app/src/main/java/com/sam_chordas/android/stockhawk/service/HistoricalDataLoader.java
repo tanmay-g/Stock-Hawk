@@ -1,6 +1,7 @@
 package com.sam_chordas.android.stockhawk.service;
 
 import android.accounts.NetworkErrorException;
+import android.annotation.SuppressLint;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.misc.Utils;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -87,7 +89,7 @@ public class HistoricalDataLoader extends AsyncTaskLoader<float[]> {
 
             Calendar calendarYearAgo = new GregorianCalendar();
             calendarYearAgo.add(Calendar.YEAR, -1);
-            SimpleDateFormat tf = new SimpleDateFormat("yyyy-MM-dd");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat tf = new SimpleDateFormat("yyyy-MM-dd");
 
             String queryUri = BASE_YQL_ADDRESS;
             Log.i(LOG_TAG, "loadInBackground: " + tf.format(calendarToday.getTime()) + " : " + tf.format(calendarYearAgo.getTime()));
@@ -112,12 +114,15 @@ public class HistoricalDataLoader extends AsyncTaskLoader<float[]> {
             Log.i(LOG_TAG, "Response: " + response);
 
             mResults = Utils.historicalDataToFloatArr(response);
-            return mResults;
+            if (mResults == null)
+                toastText = mContext.getString(R.string.graph_no_data_toast_message);
+            else
+                return mResults;
 
         } catch (IOException | NetworkErrorException e) {
             Log.e(LOG_TAG, "loadInBackground: ", e);
 //            e.printStackTrace();
-            toastText = "There was an error in fetching from the server";
+            toastText = mContext.getString(R.string.graph_error_toast_message);
         }
 
         if (toastText != null) {

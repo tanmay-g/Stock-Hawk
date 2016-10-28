@@ -6,11 +6,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sam_chordas.android.stockhawk.R;
@@ -28,7 +29,7 @@ import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
 public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAdapter.ViewHolder>
         implements ItemTouchHelperAdapter{
 
-    private static Context mContext;
+    private Context mContext;
     private static Typeface robotoLight;
     private boolean isPercent;
     public QuoteCursorAdapter(Context context, Cursor cursor){
@@ -41,32 +42,43 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         robotoLight = Typeface.createFromAsset(mContext.getAssets(), "fonts/Roboto-Light.ttf");
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.list_item_quote, parent, false);
-        ViewHolder vh = new ViewHolder(itemView);
-        return vh;
+        return new ViewHolder(itemView);
     }
 
     @SuppressLint("NewApi")
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor){
-        viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
+        final String symbolText = cursor.getString(cursor.getColumnIndex("symbol"));
+        viewHolder.symbol.setText(symbolText);
+        ((LinearLayout)viewHolder.symbol.getParent()).setContentDescription(
+                mContext.getString(R.string.listitem_content_desc) +
+                        symbolText +
+                        mContext.getString(R.string.listitem_content_desc_end)
+        );
         viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
-        int sdk = Build.VERSION.SDK_INT;
+//        int sdk = Build.VERSION.SDK_INT;
         if (cursor.getInt(cursor.getColumnIndex("is_up")) == 1){
-            if (sdk < Build.VERSION_CODES.JELLY_BEAN){
-                viewHolder.change.setBackgroundDrawable(
-                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
-            }else {
+//            if (sdk < Build.VERSION_CODES.JELLY_BEAN){
+//                viewHolder.change.setBackgroundDrawable(
                 viewHolder.change.setBackground(
-                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
-            }
+                        ContextCompat.getDrawable(mContext, R.drawable.percent_change_pill_green));
+//                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
+//            }else {
+//                viewHolder.change.setBackground(
+////                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_green));
+//                        ContextCompat.getDrawable(mContext, R.drawable.percent_change_pill_green));
+//            }
         } else{
-            if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
-                viewHolder.change.setBackgroundDrawable(
-                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
-            } else{
+//            if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
+//                viewHolder.change.setBackgroundDrawable(
                 viewHolder.change.setBackground(
-                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
-            }
+//                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
+                        ContextCompat.getDrawable(mContext, R.drawable.percent_change_pill_red));
+//            } else{
+//                viewHolder.change.setBackground(
+////                        mContext.getResources().getDrawable(R.drawable.percent_change_pill_red));
+//                        ContextCompat.getDrawable(mContext, R.drawable.percent_change_pill_red));
+//            }
         }
         if (Utils.showPercent){
             viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("percent_change")));
@@ -98,6 +110,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         public final TextView change;
         public ViewHolder(View itemView){
             super(itemView);
+//            itemView.setContentDescription("Details of stock: " + );
             symbol = (TextView) itemView.findViewById(R.id.stock_symbol);
             symbol.setTypeface(robotoLight);
             bidPrice = (TextView) itemView.findViewById(R.id.bid_price);

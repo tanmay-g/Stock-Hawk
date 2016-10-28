@@ -65,6 +65,10 @@
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingLeft="@dimen/stock_list_horizontal_tablet"
+            android:paddingRight="@dimen/stock_list_horizontal_tablet"
+            android:paddingEnd="@dimen/stock_list_horizontal_tablet"
+            android:paddingStart="@dimen/stock_list_horizontal_tablet"
             android:paddingBottom="64dp"
             android:clipToPadding="false"
             />

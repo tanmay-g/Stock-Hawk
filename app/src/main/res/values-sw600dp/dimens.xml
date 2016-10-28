@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bid_price_horiozontal_padding">20sp</dimen>
+</resources>

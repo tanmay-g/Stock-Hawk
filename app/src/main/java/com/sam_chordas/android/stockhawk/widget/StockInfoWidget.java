@@ -51,7 +51,6 @@ public class StockInfoWidget extends AppWidgetProvider {
                 .addNextIntentWithParentStack(clickIntentTemplate)
                 .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setPendingIntentTemplate(R.id.appwidget_stock_list, clickPendingIntentTemplate);
-        //TODO add empty view
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

@@ -121,6 +121,7 @@ public class StockInfoWidgetRemoteViewsService extends RemoteViewsService {
                 Uri stockUri = QuoteProvider.Quotes.withSymbol(symbol);
                 fillInIntent.setData(stockUri);
                 views.setOnClickFillInIntent(R.id.stock_widget_item, fillInIntent);
+                views.setContentDescription(R.id.stock_widget_item, getString(R.string.widget_stock_item_content_desc) + symbol);
                 return views;
             }
 

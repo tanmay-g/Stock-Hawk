@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -153,20 +154,22 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                             .content(R.string.content_test)
                             .inputType(InputType.TYPE_CLASS_TEXT)
                             .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
-                                @Override public void onInput(MaterialDialog dialog, CharSequence input) {
+                                @Override public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     // On FAB click, receive user input. Make sure the stock doesn't already exist
                                     // in the DB and proceed accordingly
                                     input = input.toString().toUpperCase();
                                     Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
                                             new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
                                             new String[] { input.toString() }, null);
-                                    if (c.getCount() != 0) {
+                                    int cnt = c.getCount();
+                                    c.close();
+                                    if (cnt != 0) {
                                         Toast toast =
-                                                Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                                                Toast.makeText(MyStocksActivity.this, R.string.stock_already_added_toast_text,
                                                         Toast.LENGTH_LONG);
                                         toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                                         toast.show();
-                                        return;
+//                                        return;
                                     } else {
                                         // Add the stock to DB
                                         mServiceIntent.putExtra("tag", "add");
@@ -237,9 +240,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
     public void restoreActionBar() {
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setTitle(mTitle);
+        }
     }
 
     @Override
@@ -252,10 +257,14 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
 
     private void setToggleIcon(MenuItem toggleIcon){
-        if (Utils.showPercent)
+        if (Utils.showPercent) {
             toggleIcon.setIcon(R.drawable.ic_percentage);
-        else
+            toggleIcon.setTitle("Show absolute change");
+        }
+        else {
             toggleIcon.setIcon(R.drawable.ic_attach_money_white_24dp);
+            toggleIcon.setTitle("Show percentage change");
+        }
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -265,10 +274,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            networkToast();
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            networkToast();
+//            return true;
+//        }
 
         if (id == R.id.action_change_units){
             // this is for changing stock changes from percent value to dollar value

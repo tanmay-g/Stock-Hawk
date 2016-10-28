@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Stock Hawk</string>
+    <string name="app_name"  translatable="false">Stock Hawk</string>
 
     <string name="action_example">Example action</string>
 
@@ -7,14 +7,42 @@
     <string name="action_change_units">Change Units</string>
     <string name="symbol_search">Symbol Search</string>
     <string name="content_test">Search for a Stock Symbol</string>
-    <string name="input_hint">FB</string>
-    <string name="input_prefill"></string>
+    <string name="input_hint" translatable="false">FB</string>
+    <string name="input_prefill" translatable="false"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
     <string name="action_refresh">Refresh</string>
-    <string name="title_activity_graph_detail">GraphDetailActivity</string>
-    <string name="appwidget_title_text">Stock Hawk</string>
+    <string name="title_activity_graph_detail" translatable="false">GraphDetailActivity</string>
+    <string name="appwidget_title_text"  translatable="false">Stock Hawk</string>
+    <string name="appwidget_title_content_desc">Stock Hawk\nTap to go to app</string>
     <string name="add_widget">Add widget</string>
 
     <string name="empty_message_default">Unable to fetch stock details</string>
     <string name="empty_message_nonet">Unable to establish network connection</string>
+
+    <string name="one_year_tab_label">1 year</string>
+    <string name="three_month_tab_label">3 months</string>
+    <string name="one_month_tab_label">1 month</string>
+
+    <string name="one_month_graph_max_label">1 month ago</string>
+    <string name="one_month_graph_mid_label">15 days ago</string>
+    <string name="one_month_graph_min_label">Today</string>
+    <string name="three_month_graph_max_label">3 months ago</string>
+    <string name="three_month_graph_mid_label">1½ months ago</string>
+    <string name="three_month_graph_min_label">Today</string>
+    <string name="one_year_graph_max_label">1 year ago</string>
+    <string name="one_year_graph_mid_label">½ year ago</string>
+    <string name="one_year_graph_min_label">Today</string>
+    <string name="stock_already_added_toast_text">This stock is already saved!</string>
+
+    <string name="widget_stock_item_content_desc">Details of stock: </string>
+    <string name="listitem_content_desc">"Details for stock: "</string>
+    <string name="listitem_content_desc_end">Tap for details, swipe to remove</string>
+    <string name="fab_content_desc">Add another stock</string>
+    <string name="graph_no_data_toast_message">No data found for this stock</string>
+    <string name="graph_error_toast_message">There was an error in fetching from the server</string>
+    <string name="stock_name_invalid_toast_message">Invalid stock name</string>
+    <string name="stock_add_net_fail_toast_message">Network failure. Try again soon</string>
+    <string name="graph_data_not_found_toast_message">No data for this stock</string>
+    <string name="graph_content_desc">Chart for the stock: </string>
+
 </resources>

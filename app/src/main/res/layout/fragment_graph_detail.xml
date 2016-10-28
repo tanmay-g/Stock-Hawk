@@ -28,17 +28,17 @@
             <android.support.design.widget.TabItem
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:text="1 month" />
+                android:text="@string/one_year_tab_label" />
 
             <android.support.design.widget.TabItem
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:text="3 months" />
+                android:text="@string/three_month_tab_label" />
 
             <android.support.design.widget.TabItem
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:text="1 Year" />
+                android:text="@string/one_year_tab_label" />
         </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -57,10 +57,9 @@
             />
 
         <TextView
-            android:text="TextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/textView"
+            android:id="@+id/empty_graph"
             android:visibility="gone" />
     </FrameLayout>
 

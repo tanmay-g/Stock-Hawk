@@ -1,6 +1,7 @@
 package com.sam_chordas.android.stockhawk.misc;
 
 import android.accounts.NetworkErrorException;
+import android.annotation.SuppressLint;
 import android.content.ContentProviderOperation;
 import android.util.Log;
 
@@ -14,7 +15,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /**
- * Created by sam_chordas on 10/8/15.
+ * Created by sam_chordas on 10/8/15
  */
 public class Utils {
 
@@ -26,8 +27,8 @@ public class Utils {
 
     public static ArrayList quoteJsonToContentVals(String JSON) throws NetworkErrorException {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
-        JSONObject jsonObject = null;
-        JSONArray resultsArray = null;
+        JSONObject jsonObject;
+        JSONArray resultsArray;
         try{
             jsonObject = new JSONObject(JSON);
             if (jsonObject != null && jsonObject.length() != 0){
@@ -71,6 +72,7 @@ public class Utils {
         return batchOperations;
     }
 
+    @SuppressLint("DefaultLocale")
     public static String truncateBidPrice(String bidPrice){
         if (bidPrice.equals("null"))
             bidPrice = "0";
@@ -78,6 +80,7 @@ public class Utils {
         return bidPrice;
     }
 
+    @SuppressLint("DefaultLocale")
     public static String truncateChange(String change, boolean isPercentChange){
         String weight = change.substring(0,1);
         String ampersand = "";
@@ -88,7 +91,7 @@ public class Utils {
         change = change.substring(1, change.length());
         double round = (double) Math.round(Double.parseDouble(change) * 100) / 100;
         change = String.format("%.2f", round);
-        StringBuffer changeBuffer = new StringBuffer(change);
+        StringBuilder changeBuffer = new StringBuilder(change);
         changeBuffer.insert(0, weight);
         changeBuffer.append(ampersand);
         change = changeBuffer.toString();
@@ -123,8 +126,8 @@ public class Utils {
 
     public static float[] historicalDataToFloatArr (String response) throws NetworkErrorException{
 
-        JSONObject jsonObject = null;
-        JSONArray resultsArray = null;
+        JSONObject jsonObject;
+        JSONArray resultsArray;
         float[] results = null;
         try{
             jsonObject = new JSONObject(response);
