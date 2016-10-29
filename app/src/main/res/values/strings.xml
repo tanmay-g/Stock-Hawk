@@ -6,7 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_change_units">Change Units</string>
     <string name="symbol_search">Symbol Search</string>
-    <string name="content_test">Search for a Stock Symbol</string>
+    <string name="content_test">Search for Stock Symbols</string>
     <string name="input_hint" translatable="false">FB</string>
     <string name="input_prefill" translatable="false"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>

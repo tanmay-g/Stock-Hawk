@@ -158,23 +158,27 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                                     // On FAB click, receive user input. Make sure the stock doesn't already exist
                                     // in the DB and proceed accordingly
                                     input = input.toString().toUpperCase();
-                                    Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-                                            new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
-                                            new String[] { input.toString() }, null);
-                                    int cnt = c.getCount();
-                                    c.close();
-                                    if (cnt != 0) {
-                                        Toast toast =
-                                                Toast.makeText(MyStocksActivity.this, R.string.stock_already_added_toast_text,
-                                                        Toast.LENGTH_LONG);
-                                        toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
-                                        toast.show();
+//                                    input = ((String)input).split("[^A-Z]")[0];
+                                    for (String symbolName : ((String)input).split("[^A-Z]")) {
+                                        Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
+                                                new String[]{QuoteColumns.SYMBOL}, QuoteColumns.SYMBOL + "= ?",
+                                                new String[]{symbolName.toString()}, null);
+                                        int cnt = c.getCount();
+                                        c.close();
+                                        if (cnt != 0) {
+                                            Toast toast =
+                                                    Toast.makeText(MyStocksActivity.this,
+                                                            symbolName + ": " + getString(R.string.stock_already_added_toast_text),
+                                                            Toast.LENGTH_LONG);
+                                            toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
+                                            toast.show();
 //                                        return;
-                                    } else {
-                                        // Add the stock to DB
-                                        mServiceIntent.putExtra("tag", "add");
-                                        mServiceIntent.putExtra("symbol", input.toString());
-                                        startService(mServiceIntent);
+                                        } else {
+                                            // Add the stock to DB
+                                            mServiceIntent.putExtra("tag", "add");
+                                            mServiceIntent.putExtra("symbol", symbolName.toString());
+                                            startService(mServiceIntent);
+                                        }
                                     }
                                 }
                             })

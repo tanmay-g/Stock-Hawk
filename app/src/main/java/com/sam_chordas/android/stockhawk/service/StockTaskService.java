@@ -146,8 +146,10 @@ public class StockTaskService extends GcmTaskService{
                         result = INVALID_STOCK_NAME;
 
                     }
-                    else if (jsonResult.isEmpty())
+                    else if (jsonResult.isEmpty()) {
+                        Log.i(LOG_TAG, "onRunTask: Bad json result");
                         result = NETWORK_FAILURE;
+                    }
                     else {
                         mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                                 jsonResult);
